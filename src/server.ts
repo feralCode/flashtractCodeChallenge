@@ -1,6 +1,6 @@
 import express from 'express'
 import socket_io from 'socket.io'
-
+import { getStockBySymbol } from './service/yahooFinance'
 const app = express()
 
 
@@ -59,3 +59,12 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`server is listening on ${port}`)
 });
+
+getStockBySymbol('AAPL')
+    .then((res) => {
+        console.log(res.data)
+    })
+    .catch(error => {
+        console.log('error ocurred while retrieving stock')
+        console.log(error)
+    })
