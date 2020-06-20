@@ -36,6 +36,22 @@ app.get('/', (req, res) => {
     res.json('ok')
 })
 
+app.get('/stock/:symbol', async (req, res) => {
+    const stockSymbol = req.params.symbol
+
+    try {
+        const yahoo = YahooFinanceAPI.getInstance()
+        const yahooResponse = await yahoo.getStockSummaryBySymbol(stockSymbol)
+        // send stock data back to client
+        res.json(yahooResponse.data)
+    } catch (error) {
+
+        console.log('error ocurred while retrieving stock')
+        console.log(error)
+        res.json(error)
+    }
+})
+
 
 
 io.on('connection', (socket) => {
@@ -59,15 +75,3 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`server is listening on ${port}`)
 });
-
-
-const yahooFinance = YahooFinanceAPI.getInstance()
-
-yahooFinance.getStockSummaryBySymbol('AAPL')
-    .then((res) => {
-        console.log(res.data)
-    })
-    .catch(error => {
-        console.log('error ocurred while retrieving stock')
-        console.log(error)
-    })
