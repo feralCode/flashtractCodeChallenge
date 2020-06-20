@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const socket_io_1 = __importDefault(require("socket.io"));
-const yahooFinance_1 = require("./service/yahooFinance");
+const service_1 = require("./service/");
 const app = express_1.default();
 // socket.io integration
 const http = require('http').createServer(app);
@@ -51,7 +51,8 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
     console.log(`server is listening on ${port}`);
 });
-yahooFinance_1.getStockBySymbol('AAPL')
+const yahooFinance = service_1.YahooFinanceAPI.getInstance();
+yahooFinance.getStockSummaryBySymbol('AAPL')
     .then((res) => {
     console.log(res.data);
 })

@@ -1,0 +1,1 @@
+export { YahooFinanceAPI } from './yahooFinance';

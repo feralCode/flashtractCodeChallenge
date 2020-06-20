@@ -1,6 +1,6 @@
 import express from 'express'
 import socket_io from 'socket.io'
-import { getStockBySymbol } from './service/yahooFinance'
+import { YahooFinanceAPI } from './service/'
 const app = express()
 
 
@@ -60,7 +60,10 @@ app.listen(port, () => {
     console.log(`server is listening on ${port}`)
 });
 
-getStockBySymbol('AAPL')
+
+const yahooFinance = YahooFinanceAPI.getInstance()
+
+yahooFinance.getStockSummaryBySymbol('AAPL')
     .then((res) => {
         console.log(res.data)
     })
