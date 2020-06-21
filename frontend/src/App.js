@@ -24,13 +24,17 @@ function App() {
   const [watchList, setWatchList] = useState(mockWatchList);
   const [activeStockSymbol, setActiveStockSymbol] = useState(null);
   return (
-    <div className="main">
-      <WatchList
-        watchList={watchList}
-        setActiveStockSymbol={setActiveStockSymbol}
-      />
-      <StockDetails stockSymbol={activeStockSymbol} />
-    </div>
+    <React.Fragment>
+      <div>STONKS</div>
+      <div className="main">
+        <WatchList
+          watchList={watchList}
+          activeStockSymbol={activeStockSymbol}
+          setActiveStockSymbol={setActiveStockSymbol}
+        />
+        <StockDetails stockSymbol={activeStockSymbol} />
+      </div>
+    </React.Fragment>
   );
 }
 

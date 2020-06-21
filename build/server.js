@@ -18,19 +18,8 @@ const service_1 = require("./service/");
 const app = express_1.default();
 // socket.io integration
 const http = require('http').createServer(app);
-const socketConfig = {
-    handlePreflightRequest: (req, res) => {
-        const headers = {
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": req.headers.origin,
-            "Access-Control-Allow-Credentials": true
-        };
-        res.writeHead(200, headers);
-        res.end();
-    },
-    origins: '*:*'
-};
-const io = socket_io_1.default(http, socketConfig);
+const socketConfig = {};
+const io = socket_io_1.default(http);
 // server static files from public folder
 const baseDir = __dirname + '/../public/';
 app.use(express_1.default.static(baseDir));
@@ -40,7 +29,8 @@ app.use(express_1.default.json());
 //  enable cross origin requests
 //  and tell client to cache responses for 120 seconds
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Credentials');
     res.header('cache-control', 'max-age=120');
     next();
 });
@@ -64,8 +54,20 @@ app.get('/stock/:symbol', (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 io.on('connection', (socket) => {
     console.log('a user connected');
-    socket.on('message', (msg) => {
-        console.log(msg);
+    socket.on('subscribeToTimer', (interval) => {
+        console.log('client is subscribing to timer with interval ', interval);
+        setInterval(() => {
+            socket.emit('timer', new Date());
+        }, interval);
+    });
+    socket.on('stockUpdate', (stockSymbol) => {
+        const yahoo = service_1.YahooFinanceAPI.getInstance();
+        yahoo.addSymbolToWatchList(stockSymbol);
+        const onUpdate = (updateData) => {
+            const [symbol, data] = updateData;
+            socket.emit(symbol, data);
+        };
+        yahoo.addSubscriber(onUpdate);
     });
     socket.on('disconnect', () => {
         console.log('user disconnected');
@@ -77,4 +79,5 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
     console.log(`server is listening on ${port}`);
 });
+io.listen(8000);
 //# sourceMappingURL=server.js.map

@@ -9,7 +9,11 @@ import './index.scss';
 //     added: String (ISO 8601 date)
 // }
 
-export default function WatchList({watchList, setActiveStockSymbol}) {
+export default function WatchList({
+  watchList,
+  setActiveStockSymbol,
+  activeStockSymbol,
+}) {
   // useEffect(() => {
   //   setWatchList(mockWatchList);
   // }, []);
@@ -17,10 +21,15 @@ export default function WatchList({watchList, setActiveStockSymbol}) {
   return (
     <div className="watch-list-container">
       <div className="header">My Watchlist</div>
-      {watchList.map(item => {
+      {watchList.map((item, index) => {
         return (
           <div
-            className="watch-list-item"
+            key={`watch-list-item-${index}`}
+            className={
+              activeStockSymbol === item.symbol
+                ? 'watch-list-item active'
+                : 'watch-list-item'
+            }
             onClick={() => setActiveStockSymbol(item.symbol)}
           >
             <div className="name-container">

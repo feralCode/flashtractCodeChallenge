@@ -7,18 +7,9 @@ const app = express()
 // socket.io integration
 const http = require('http').createServer(app);
 const socketConfig = {
-    handlePreflightRequest: (req: any, res: any) => {
-        const headers = {
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
-            "Access-Control-Allow-Credentials": true
-        };
-        res.writeHead(200, headers);
-        res.end();
-    },
-    origins: '*:*'
+
 }
-const io = socket_io(http, socketConfig);
+const io = socket_io(http);
 
 // server static files from public folder
 const baseDir = __dirname + '/../public/'
@@ -29,7 +20,9 @@ app.use(express.json())
 //  enable cross origin requests
 //  and tell client to cache responses for 120 seconds
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
+
+    res.header('Access-Control-Allow-Origin', req.headers.origin)
+    res.header('Access-Control-Allow-Credentials', /*  */)
     res.header('cache-control', 'max-age=120')
     next()
 })
@@ -60,8 +53,22 @@ app.get('/stock/:symbol', async (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.on('message', (msg) => {
-        console.log(msg)
+    socket.on('subscribeToTimer', (interval) => {
+        console.log('client is subscribing to timer with interval ', interval);
+        setInterval(() => {
+            socket.emit('timer', new Date());
+        }, interval);
+    });
+
+    socket.on('stockUpdate', (stockSymbol) => {
+        const yahoo = YahooFinanceAPI.getInstance()
+        yahoo.addSymbolToWatchList(stockSymbol)
+
+        const onUpdate = (updateData: any[]) => {
+            const [symbol, data] = updateData
+            socket.emit(symbol, data);
+        }
+        yahoo.addSubscriber(onUpdate)
     })
 
     socket.on('disconnect', () => {
@@ -78,3 +85,5 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`server is listening on ${port}`)
 });
+
+io.listen(8000)

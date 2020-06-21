@@ -1,10 +1,29 @@
 "use strict";
-class Stock {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.StockCache = void 0;
+class StockCache {
     constructor() {
-        this.price = null;
-        this.lastUpdated = null;
+        this.cacheMap = {};
+        // using arrow functions as class is singleton
+        //  no performance decrease
+        this.getStockBySymbol = (stockSymbol) => {
+            if (this.cacheMap[stockSymbol] !== undefined) {
+                return this.cacheMap[stockSymbol];
+            }
+            return null;
+        };
+        this.setStockBySymbol = (stockSymbol, data) => {
+            this.cacheMap[stockSymbol] = data;
+            console.log(this.cacheMap);
+            return;
+        };
     }
 }
-class StockPriceCache {
-}
+exports.StockCache = StockCache;
+StockCache.getInstance = () => {
+    if (!StockCache.instance) {
+        StockCache.instance = new StockCache();
+    }
+    return StockCache.instance;
+};
 //# sourceMappingURL=StockPriceCache.js.map
