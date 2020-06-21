@@ -22,7 +22,7 @@ class StockCache {
   setStockBySymbol = (stockSymbol: string, data: {}) => {
     this.cacheMap[stockSymbol] = data
     console.log(this.cacheMap)
-    return
+    return;
   }
 }
 

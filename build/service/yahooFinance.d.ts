@@ -15,5 +15,5 @@ export declare class YahooFinanceAPI {
         "x-rapidapi-host": string;
         "x-rapidapi-key": string;
     };
-    getStockSummaryBySymbol: (symbol: string) => Promise<import("axios").AxiosResponse<any>>;
+    getStockSummaryBySymbol: (symbol: string) => Promise<any>;
 }

@@ -1,5 +1,7 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 import { StockCache } from './StockPriceCache'
+
+import Axios from 'axios';
 
 
 // req.query({
@@ -24,8 +26,10 @@ export class YahooFinanceAPI {
     private static instance: YahooFinanceAPI;
     private static baseURL = 'https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2'
     private static APIKeys = [
-        '87c1dd4885msh8a002eed6f2cc5fp15cae8jsn52b9a9652f6e', // ours
-        '9782c9bf2bmshb4f39a2b5204672p1e1f59jsnb81f4a3c6e34'
+        '9782c9bf2bmshb4f39a2b5204672p1e1f59jsnb81f4a3c6e34',
+        '192881900fmsh83b21139b9eda59p108ca9jsnefb28bb236fa',
+        'bf6a2bf862mshe23d3acd0df4650p1c0239jsnecc20948c78a',
+        '56d4ee9cfbmsh3f02729662260f9p141ca2jsnffa954ca7211'
     ]
     public userWatchListSymbols: string[] = []
     private stockCache: StockCache = StockCache.getInstance()
@@ -46,7 +50,10 @@ export class YahooFinanceAPI {
     }
 
     addSubscriber = (cb: Function) => {
-        this.subscribers.push(cb)
+        // if (this.subscribers.includes(cb) === false) {
+        //     this.subscribers.push(cb)
+        // }
+        this.subscribers[0] = cb
     }
 
     getAllWatchedSymbolsLoop = async (index = 0) => {
@@ -57,12 +64,15 @@ export class YahooFinanceAPI {
         console.log('currentSymbolToRefresh', currentSymbolToRefresh)
         try {
             const response = await this.getStockSummaryBySymbol(currentSymbolToRefresh)
+            const newStockData = response.data
             // update cache
-            this.stockCache.setStockBySymbol(currentSymbolToRefresh, response.data)
+            this.stockCache.setStockBySymbol(currentSymbolToRefresh, newStockData)
+            //const newStockData = this.stockCache.getStockBySymbol(currentSymbolToRefresh)
             // lets notify subscribers too
             console.log('notifying subscribers')
-            this.subscribers.forEach((sub) => {
-                sub([currentSymbolToRefresh, response.data])
+            this.subscribers.forEach((sub, index) => {
+                console.log('subscribers', index)
+                sub([currentSymbolToRefresh, newStockData])
             })
 
             // lets increment since no errors
@@ -99,7 +109,13 @@ export class YahooFinanceAPI {
         return headerConfig
     }
 
-    getStockSummaryBySymbol = async (symbol: string) => {
+    getStockSummaryBySymbol = async (symbol: string): Promise<any> => {
+        // const cachedData = this.stockCache.getStockBySymbol(symbol)
+        // if (cachedData !== null) {
+        //     return new Promise((resolve, reject) => {
+        //         resolve(cachedData)
+        //     })
+        // }
         // 'get-summary?region=US&symbol=AAPL'
         const url = `${YahooFinanceAPI.baseURL}/get-summary?region=US&symbol=${symbol}`
         const requestOptions: AxiosRequestConfig = {

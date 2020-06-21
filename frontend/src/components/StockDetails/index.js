@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {
   getStockBySymbolID,
   getCachedStockData,
-  subscribeToTimer,
   subscribeToStockSymbol,
   unsubscribeToStockSymbol,
 } from '../../api/';
@@ -16,6 +15,7 @@ export default function StockDetails({stockSymbol}) {
   useEffect(() => {
     console.log('useEffect called');
     if (stockSymbol) {
+      unsubscribeToSymbol();
       getCachedDetails();
       getStockDetails();
       subscribeToSymbol();
@@ -29,7 +29,7 @@ export default function StockDetails({stockSymbol}) {
   }
 
   function unsubscribeToSymbol() {
-    unsubscribeToStockSymbol(stockSymbol);
+    unsubscribeToStockSymbol(stockSymbol, setStockDetails);
   }
   // lets retrieve the cached version of the stock data if available
   function getCachedDetails() {

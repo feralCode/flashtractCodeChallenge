@@ -1,14 +1,13 @@
 import express from 'express'
 import socket_io from 'socket.io'
 import { YahooFinanceAPI } from './service/'
+import { AxiosResponse } from 'axios';
 const app = express()
 
 
 // socket.io integration
-const http = require('http').createServer(app);
-const socketConfig = {
+const http = require('http').Server(app);
 
-}
 const io = socket_io(http);
 
 // server static files from public folder
@@ -35,11 +34,19 @@ app.get('/', (req, res) => {
 app.get('/stock/:symbol', async (req, res) => {
     const stockSymbol = req.params.symbol
 
+
+
+
     try {
         const yahoo = YahooFinanceAPI.getInstance()
+
         const yahooResponse = await yahoo.getStockSummaryBySymbol(stockSymbol)
         // send stock data back to client
-        res.json(yahooResponse.data)
+        if (yahooResponse.data) {
+            return res.json(yahooResponse.data)
+        } else {
+            return yahooResponse
+        }
     } catch (error) {
 
         console.log('error ocurred while retrieving stock')
@@ -71,6 +78,8 @@ io.on('connection', (socket) => {
         yahoo.addSubscriber(onUpdate)
     })
 
+
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
@@ -82,8 +91,8 @@ io.on('connection', (socket) => {
 // get port from env  or use 8080
 const port = process.env.PORT || 8080
 // listen to requests
-app.listen(port, () => {
-    console.log(`server is listening on ${port}`)
-});
+// app.listen(port, () => {
+//     console.log(`server is listening on ${port}`)
+// });
 
-io.listen(8000)
+http.listen(port)

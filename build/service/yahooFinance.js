@@ -33,7 +33,10 @@ class YahooFinanceAPI {
         this.stockCache = StockPriceCache_1.StockCache.getInstance();
         this.subscribers = [];
         this.addSubscriber = (cb) => {
-            this.subscribers.push(cb);
+            // if (this.subscribers.includes(cb) === false) {
+            //     this.subscribers.push(cb)
+            // }
+            this.subscribers[0] = cb;
         };
         this.getAllWatchedSymbolsLoop = (index = 0) => __awaiter(this, void 0, void 0, function* () {
             console.log('getAllWatchedSymbolsLoop called with index', index);
@@ -43,12 +46,15 @@ class YahooFinanceAPI {
             console.log('currentSymbolToRefresh', currentSymbolToRefresh);
             try {
                 const response = yield this.getStockSummaryBySymbol(currentSymbolToRefresh);
+                const newStockData = response.data;
                 // update cache
-                this.stockCache.setStockBySymbol(currentSymbolToRefresh, response.data);
+                this.stockCache.setStockBySymbol(currentSymbolToRefresh, newStockData);
+                //const newStockData = this.stockCache.getStockBySymbol(currentSymbolToRefresh)
                 // lets notify subscribers too
                 console.log('notifying subscribers');
-                this.subscribers.forEach((sub) => {
-                    sub([currentSymbolToRefresh, response.data]);
+                this.subscribers.forEach((sub, index) => {
+                    console.log('subscribers', index);
+                    sub([currentSymbolToRefresh, newStockData]);
                 });
                 // lets increment since no errors
                 newIndex += 1;
@@ -82,6 +88,12 @@ class YahooFinanceAPI {
             return headerConfig;
         };
         this.getStockSummaryBySymbol = (symbol) => __awaiter(this, void 0, void 0, function* () {
+            // const cachedData = this.stockCache.getStockBySymbol(symbol)
+            // if (cachedData !== null) {
+            //     return new Promise((resolve, reject) => {
+            //         resolve(cachedData)
+            //     })
+            // }
             // 'get-summary?region=US&symbol=AAPL'
             const url = `${YahooFinanceAPI.baseURL}/get-summary?region=US&symbol=${symbol}`;
             const requestOptions = {
@@ -99,8 +111,10 @@ class YahooFinanceAPI {
 exports.YahooFinanceAPI = YahooFinanceAPI;
 YahooFinanceAPI.baseURL = 'https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2';
 YahooFinanceAPI.APIKeys = [
-    '87c1dd4885msh8a002eed6f2cc5fp15cae8jsn52b9a9652f6e',
-    '9782c9bf2bmshb4f39a2b5204672p1e1f59jsnb81f4a3c6e34'
+    '9782c9bf2bmshb4f39a2b5204672p1e1f59jsnb81f4a3c6e34',
+    '192881900fmsh83b21139b9eda59p108ca9jsnefb28bb236fa',
+    'bf6a2bf862mshe23d3acd0df4650p1c0239jsnecc20948c78a',
+    '56d4ee9cfbmsh3f02729662260f9p141ca2jsnffa954ca7211'
 ];
 YahooFinanceAPI.getInstance = () => {
     if (!YahooFinanceAPI.instance) {

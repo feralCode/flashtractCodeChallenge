@@ -1,9 +1,5 @@
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:8000');
-function subscribeToTimer(cb) {
-  socket.on('timer', timestamp => cb(null, timestamp));
-  socket.emit('subscribeToTimer', 1000);
-}
+const socket = openSocket('http://localhost:8080');
 
 // We'll keep a key value store of stock information here
 //  and store the results in local storage for later use
@@ -15,6 +11,9 @@ let lastSymbol = null;
 function updateLocalStorage(symbol, data) {
   console.log('updateLocalStorage', symbol);
   console.log('updateLocalStorage', data);
+  if (data === undefined || data === null) {
+    return;
+  }
   stockMapCache[symbol] = data;
   // store data locally for cache
   localStorage.setItem('stockMapCache', JSON.stringify(stockMapCache));
@@ -58,14 +57,16 @@ function subscribeToStockSymbol(stockSymbol, cb) {
   socket.emit('stockUpdate', stockSymbol);
 }
 
-function unsubscribeToStockSymbol(stockSymbol) {
-  socket.removeAllListeners(stockSymbol);
+function unsubscribeToStockSymbol(stockSymbol, cb) {
+  console.log('unsubscribeToStockSymbol - stockSymbol', stockSymbol);
+  socket.removeAllListeners();
+  socket.removeEventListener(stockSymbol, cb);
+  socket.removeListener(stockSymbol, cb);
 }
 
 export {
   getStockBySymbolID,
   getCachedStockData,
-  subscribeToTimer,
   subscribeToStockSymbol,
   unsubscribeToStockSymbol,
 };

@@ -17,8 +17,7 @@ const socket_io_1 = __importDefault(require("socket.io"));
 const service_1 = require("./service/");
 const app = express_1.default();
 // socket.io integration
-const http = require('http').createServer(app);
-const socketConfig = {};
+const http = require('http').Server(app);
 const io = socket_io_1.default(http);
 // server static files from public folder
 const baseDir = __dirname + '/../public/';
@@ -44,7 +43,12 @@ app.get('/stock/:symbol', (req, res) => __awaiter(void 0, void 0, void 0, functi
         const yahoo = service_1.YahooFinanceAPI.getInstance();
         const yahooResponse = yield yahoo.getStockSummaryBySymbol(stockSymbol);
         // send stock data back to client
-        res.json(yahooResponse.data);
+        if (yahooResponse.data) {
+            return res.json(yahooResponse.data);
+        }
+        else {
+            return yahooResponse;
+        }
     }
     catch (error) {
         console.log('error ocurred while retrieving stock');
@@ -76,8 +80,8 @@ io.on('connection', (socket) => {
 // get port from env  or use 8080
 const port = process.env.PORT || 8080;
 // listen to requests
-app.listen(port, () => {
-    console.log(`server is listening on ${port}`);
-});
-io.listen(8000);
+// app.listen(port, () => {
+//     console.log(`server is listening on ${port}`)
+// });
+http.listen(port);
 //# sourceMappingURL=server.js.map
