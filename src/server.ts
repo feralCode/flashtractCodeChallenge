@@ -25,9 +25,12 @@ const baseDir = __dirname + '/../public/'
 app.use(express.static(baseDir))
 // json middleware
 app.use(express.json())
-// custom middleware    enable cross origin requests
+// custom middleware
+//  enable cross origin requests
+//  and tell client to cache responses for 120 seconds
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*")
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('cache-control', 'max-age=120')
     next()
 })
 
