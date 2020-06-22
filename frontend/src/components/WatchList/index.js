@@ -1,5 +1,5 @@
-import React from 'react';
-
+import React, {useState} from 'react';
+import AddStock from '../AddStock/';
 import './index.scss';
 
 // WatchList Definition
@@ -13,10 +13,13 @@ export default function WatchList({
   watchList,
   setActiveStockSymbol,
   activeStockSymbol,
+  addToWatchList,
 }) {
   // useEffect(() => {
   //   setWatchList(mockWatchList);
   // }, []);
+
+  const [addStockActive, setAddStockActive] = useState(false);
 
   return (
     <div className="watch-list-container">
@@ -40,7 +43,16 @@ export default function WatchList({
         );
       })}
       <div className="watch-list-item add-button  ">
-        <span className="material-icons">add_circle_outline</span>Add Symbol
+        {addStockActive === true ? (
+          <AddStock
+            setAddStockActive={setAddStockActive}
+            addToWatchList={addToWatchList}
+          />
+        ) : (
+          <div onClick={() => setAddStockActive(true)}>
+            <span className="material-icons">add_circle_outline</span>Add Symbol
+          </div>
+        )}
       </div>
     </div>
   );

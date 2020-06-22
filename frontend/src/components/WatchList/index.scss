@@ -1,6 +1,7 @@
 .watch-list-container {
   padding: 20px 12px;
   max-width: 500px;
+
   .header {
     font-weight: 700;
     font-size: 28px;
@@ -8,6 +9,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color: #2de0a7;
   }
+
   .watch-list-item {
     padding: 12px 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -19,6 +21,7 @@
       .symbol {
         color: #66d9ef;
       }
+
       .name {
         color: rgba(102, 217, 239, 00.6);
       }
@@ -33,6 +36,17 @@
 
 .watch-list-item.add-button {
   font-weight: 700;
+  height: 100%;
+
+
+  >div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
   .material-icons {
     padding-right: 8px;
   }
@@ -43,11 +57,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
   .symbol {
     font-size: 18px;
     font-weight: 700;
     color: #fff;
   }
+
   .name {
     font-size: 12px;
     font-weight: 700;
