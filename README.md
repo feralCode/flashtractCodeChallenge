@@ -5,9 +5,9 @@ Flashtract Coding Challenge
 
 requirements node, npm
 
-#Installation
+# Installation
 `yarn install`
 
-#Start Server
+# Start Server
 to start dev server
 `yarn dev`
